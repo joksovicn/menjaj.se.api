@@ -17,17 +17,16 @@ import play.modules.reactivemongo._
 import play.modules.reactivemongo.PlayBsonImplicits._
 
 import org.joda.time.DateTime
-import dao.JsonImplicits
 
 object ItemController extends Controller with MongoController with JsonImplicits with Secured {
   val db = ReactiveMongoPlugin.db
   lazy val collection = db("items")
 
-  def save(name: String, description: String, imageUrl: String) = IsAuthenticated {
+  def save(name: String, description: String, status: Int, imageUrl: String) = IsAuthenticated {
     userId => request =>
       Async {
         val item = Item(Some(BSONObjectID.generate), name, description,
-          imageUrl, userId, DateTime.now(), None)
+          imageUrl, userId, ItemStatus.apply(status), DateTime.now(), None)
         Logger.info("Crate item: %s" format item)
 
         collection.insert[Item](item).map(lastError =>

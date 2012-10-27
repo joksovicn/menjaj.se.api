@@ -17,7 +17,6 @@ import play.modules.reactivemongo.PlayBsonImplicits._
 
 import org.joda.time.DateTime
 import tyrex.services.UUID
-import dao.JsonImplicits
 
 object UserController extends Controller with MongoController with JsonImplicits with Secured {
   val db = ReactiveMongoPlugin.db

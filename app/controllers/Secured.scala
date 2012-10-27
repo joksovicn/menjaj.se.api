@@ -24,7 +24,7 @@ trait Secured {
                 case Some(user) =>
                   f(user.id.get.stringify)(request)
                 case None =>
-                  Unauthorized
+                  Forbidden
               }
             }
           })
