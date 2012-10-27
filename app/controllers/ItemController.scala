@@ -9,7 +9,6 @@ import reactivemongo.api._
 import reactivemongo.bson._
 import reactivemongo.bson.handlers.DefaultBSONHandlers._
 
-import play.api.Play.current
 import play.api.libs.json._
 
 import play.modules.reactivemongo._
@@ -17,15 +16,14 @@ import play.modules.reactivemongo.PlayBsonImplicits._
 
 import org.joda.time.DateTime
 
-object ItemController extends Controller with MongoController with JsonImplicits with Secured {
-  val db = ReactiveMongoPlugin.db
-  lazy val collection = db("items")
+object ItemController extends StorageController with JsonImplicits with Secured {
+  lazy val collection = storage("items")
 
-  def create(name: String, description: String) = IsAuthenticated {
+  def create(name: String, description: String, imageUrl: String) = IsAuthenticated {
     userId => _ =>
       Async {
         val item = Item(Some(BSONObjectID.generate), name, description,
-          "user_id", Some(DateTime.now()), Some(DateTime.now()))
+          userId, imageUrl, DateTime.now(), None)
         val id = item.id.map(_.stringify).getOrElse("")
 
         collection.insert[Item](item).map(lastError =>

@@ -18,9 +18,8 @@ import play.modules.reactivemongo.PlayBsonImplicits._
 import org.joda.time.DateTime
 import com.eaio.uuid.UUIDGen
 
-class UserController extends Controller with MongoController with JsonImplicits with Secured {
-  val db = ReactiveMongoPlugin.db
-  lazy val collection = db("users")
+class UserController extends StorageController with JsonImplicits with Secured {
+  lazy val collection = storage("users")
 
   def create(name: String, email: String, externalId: String, avatarUrl: String) = Action {
     Async {

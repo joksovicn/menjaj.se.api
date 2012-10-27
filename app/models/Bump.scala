@@ -1,12 +1,11 @@
 package models
 
-/**
- * Created with IntelliJ IDEA.
- * User: joksovicn
- * Date: 10/27/12
- * Time: 3:50 AM
- * To change this template use File | Settings | File Templates.
- */
-class Bump {
+import reactivemongo.bson.BSONObjectID
+import org.joda.time.DateTime
 
-}
+case class Bump(id: Option[BSONObjectID],
+                item: String,
+                origin_user_id: String,
+                destination_user_id: String,
+                bumpDate: DateTime)
+
