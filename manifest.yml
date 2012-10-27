@@ -1,0 +1,18 @@
+--- 
+applications: 
+  dist/menjajse-api-1.0-SNAPSHOT.zip: 
+    framework: 
+      name: play
+      info: 
+        mem: 256M
+        exec: 
+        description: Play Framework Application
+    services: 
+      mongodb-791af: 
+        type: mongodb
+      mongodb-92cfb: 
+        type: mongodb
+    name: menjajse
+    instances: 1
+    mem: 2G
+    url: ${name}.${target-base}
