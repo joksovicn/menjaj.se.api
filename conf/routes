@@ -6,7 +6,9 @@
 GET     /                           controllers.Application.index
 
 GET     /items                      controllers.ItemController.retrieve()
-POST    /items                      controllers.ItemController.create(name: String, description: String, imageUrl: String)
+POST    /items                      controllers.ItemController.save(name: String, description: String, imageUrl: String)
+
+POST    /users                      controllers.UserController.save(name: String, email: String, externalId: String, avatarUrl: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

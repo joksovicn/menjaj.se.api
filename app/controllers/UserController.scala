@@ -1,54 +1,83 @@
 package controllers
 
 import models._
+import dao._
 
 import play.api._
+import play.api.Play.current
 import play.api.mvc._
+import play.api.libs.json._
 
 import reactivemongo.api._
 import reactivemongo.bson._
 import reactivemongo.bson.handlers.DefaultBSONHandlers._
 
-import play.api.Play.current
-import play.api.libs.json._
-
 import play.modules.reactivemongo._
 import play.modules.reactivemongo.PlayBsonImplicits._
 
 import org.joda.time.DateTime
-import com.eaio.uuid.UUIDGen
+import tyrex.services.UUID
+import dao.JsonImplicits
 
-class UserController extends StorageController with JsonImplicits with Secured {
-  lazy val collection = storage("users")
+object UserController extends Controller with MongoController with JsonImplicits with Secured {
+  val db = ReactiveMongoPlugin.db
+  lazy val collection = db("users")
 
-  def create(name: String, email: String, externalId: String, avatarUrl: String) = Action {
+  implicit val read = User.UserBSONReader
+
+  def save(name: String, email: String, externalId: String, avatarUrl: String) = Action {
     Async {
-      val token = String.valueOf(UUIDGen.getClockSeqAndNode)
-      val user = User(Some(BSONObjectID.generate), name, email,
-        externalId, avatarUrl, token, DateTime.now(), None)
-      val id = user.id.map(_.stringify).getOrElse("")
+      val findQuery = QueryBuilder().query(Json.obj("externalId" -> externalId))
+      val token = UUID.create()
 
-      collection.insert[User](user).map(lastError =>
-        lastError.ok match {
-          case true =>
-            Logger.info("User created: %s" format id)
-            Created.withHeaders(("Location", "/users/%s" format id), ("User-Token", token))
-          case false =>
-            Logger.info("Mongo Error: %s" format lastError.errMsg.getOrElse(""))
-            InternalServerError
+      collection.find[User](findQuery).toList flatMap {
+        items => items match {
+          case x :: xs =>
+            Logger.info("User found by external id: %s" format externalId)
+
+            val modifier = x.copy(name = name, email = email, avatarUrl = avatarUrl,
+              apiToken = token, updateDate = Some(DateTime.now()))
+
+            collection.update(BSONDocument("_id" -> x.id.get), User.UserBSONWriter.toBSON(modifier)) map {
+              lastError => lastError.ok match {
+                case false =>
+                  Logger.info("Mongo Error: %s" format
+                    lastError.errMsg.getOrElse(""))
+                  InternalServerError
+                case true =>
+                  Ok.withHeaders(("Location", "/users/%s" format x.id.
+                    map(_.stringify).getOrElse("")), ("User-Token", x.apiToken))
+              }
+            }
+          case Nil =>
+            val user = User(Some(BSONObjectID.generate), name, email,
+              externalId, avatarUrl, token, DateTime.now(), None)
+            Logger.info("Create user: %s" format user)
+
+            collection.insert[User](user) map {
+              lastError => lastError.ok match {
+                case false =>
+                  Logger.info("Mongo Error: %s" format lastError.errMsg.getOrElse(""))
+                  InternalServerError
+                case true =>
+                  val id = user.id.map(_.stringify).getOrElse("")
+                  Logger.info("User created: %s" format id)
+                  Created.withHeaders(("Location", "/users/%s" format id), ("User-Token", token))
+              }
+            }
         }
-      )
+      }
     }
   }
 
-
   def retrieve(id: String) = Action {
     Async {
-      val qb = QueryBuilder().query(BSONDocument())
+      val qb = QueryBuilder().query(Json.obj("_id" -> id))
 
-      collection.find[JsValue](qb)(DefaultBSONReaderHandler, PrettyJsValueReader, ec).toList.map {
-        persons =>
-          Ok(persons.foldLeft(JsArray(List()))((obj, person) => obj ++ Json.arr(person)))
+      collection.find[JsValue](qb)(
+        DefaultBSONReaderHandler, PrettyJsValueReader, ec).toList map {
+        users =>
+          Ok(users.head)
       }
     }
   }

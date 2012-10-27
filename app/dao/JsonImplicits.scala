@@ -1,4 +1,4 @@
-package controllers
+package dao
 
 import play.api.libs.json._
 import reactivemongo.bson._
