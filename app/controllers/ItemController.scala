@@ -43,13 +43,13 @@ object ItemController extends Controller with MongoController with JsonImplicits
       }
   }
 
-  def retrieve() = Action {
+  def find(query: String) = Action {
     Async {
-      collection.find[JsValue](
-        QueryBuilder().query(BSONDocument()))(
+      collection.find[JsValue](QueryBuilder().query(
+        BSONDocument("name" -> BSONRegex(".*%s.*" format query, "i"))))(
         DefaultBSONReaderHandler, PrettyJsValueReader, ec).toList map {
-        persons =>
-          Ok(persons.foldLeft(JsArray(List()))((obj, person) => obj ++ Json.arr(person)))
+        items =>
+          Ok(items.foldLeft(JsArray(List()))((obj, item) => obj ++ Json.arr(item)))
       }
     }
   }

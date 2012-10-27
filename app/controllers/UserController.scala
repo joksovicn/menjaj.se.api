@@ -69,15 +69,15 @@ object UserController extends Controller with MongoController with JsonImplicits
     }
   }
 
-  def retrieve(id: String) = Action {
+  def get(id: String) = Action {
     Async {
-      val qb = QueryBuilder().query(Json.obj("_id" -> id))
-
-      collection.find[JsValue](qb)(
-        DefaultBSONReaderHandler, PrettyJsValueReader, ec).toList map {
-        users =>
-          Ok(users.head)
+      UserDao.findById(id).map {
+        user => user match {
+          case Some(json) => Ok(json)
+          case None => NotFound
+        }
       }
     }
   }
+
 }

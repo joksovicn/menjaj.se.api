@@ -5,12 +5,13 @@
 # Home page
 GET     /                           controllers.Application.index
 
-GET     /items                      controllers.ItemController.retrieve()
+GET     /items                      controllers.ItemController.find(query ?= "")
 POST    /items                      controllers.ItemController.save(name: String, description: String, status: Int, imageUrl: String)
 
 POST    /items/:id/status           controllers.ItemStatusController.save(id: String, value: Int)
 
 POST    /users                      controllers.UserController.save(name: String, email: String, externalId: String, avatarUrl: String)
+GET     /users/:id                  controllers.UserController.get(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

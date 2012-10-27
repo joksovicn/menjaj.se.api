@@ -22,6 +22,15 @@ object UserDao extends JsonImplicits {
 
   implicit val reader = User.UserBSONReader
 
+  def findById(id: String) = {
+    collection.find[JsValue](
+      QueryBuilder().query(
+        BSONDocument("_id" -> BSONObjectID(id)))
+    )(
+      DefaultBSONReaderHandler, PrettyJsValueReader, global
+    ).headOption
+  }
+
   def findByToken(token: String) =
     collection.find[User](
       QueryBuilder().query(
