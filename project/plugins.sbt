@@ -4,7 +4,7 @@ logLevel := Level.Warn
 // The Typesafe repository 
 resolvers ++= Seq(
   "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
-  "Typesafe snapshots" at "https://bitbucket.org/sgodbillon/repository/raw/master/snapshots/"
+  "Typesafe snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
 )
 
 // Use the Play sbt plugin for Play projects
