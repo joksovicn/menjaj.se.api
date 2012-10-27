@@ -43,11 +43,23 @@ object ItemController extends Controller with MongoController with JsonImplicits
       }
   }
 
-  def find(query: String) = Action {
+  def get(id: String) = Action {
+    Async {
+      ItemDao.findById(id).map {
+        user => user match {
+          case Some(json) => Ok(json)
+          case None => NotFound
+        }
+      }
+    }
+  }
+
+  def find(query: String, page: Int, count: Int) = Action {
     Async {
       collection.find[JsValue](QueryBuilder().query(
-        BSONDocument("name" -> BSONRegex(".*%s.*" format query, "i"))))(
-        DefaultBSONReaderHandler, PrettyJsValueReader, ec).toList map {
+        BSONDocument("name" -> BSONRegex(".*%s.*" format query, "i"))),
+        QueryOpts().skip(page * count).batchSize(count).exhaust
+      )(DefaultBSONReaderHandler, PrettyJsValueReader, ec).toList map {
         items =>
           Ok(items.foldLeft(JsArray(List()))((obj, item) => obj ++ Json.arr(item)))
       }

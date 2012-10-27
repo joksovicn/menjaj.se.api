@@ -79,5 +79,4 @@ object UserController extends Controller with MongoController with JsonImplicits
       }
     }
   }
-
 }

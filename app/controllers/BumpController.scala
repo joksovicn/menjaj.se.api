@@ -1,5 +1,5 @@
 package controllers
 
-class BumpController {
+object BumpController {
 
 }
