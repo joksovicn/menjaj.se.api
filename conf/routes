@@ -6,13 +6,15 @@
 GET     /                           controllers.Application.index
 
 POST    /items                      controllers.ItemController.save(name: String, description: String, status: Int, imageUrl: String)
-GET     /items                      controllers.ItemController.find(query: String ?= "", page: Int ?= 0, count: Int ?= 20)
-GET     /items/:id                  controllers.ItemController.get(id: String)
+GET     /items                      controllers.ItemController.findAll(query: String ?= "", page: Int ?= 0, count: Int ?= 20)
+GET     /items/:id                  controllers.ItemController.findOne(id: String)
 
 POST    /items/:id/status           controllers.ItemStatusController.save(id: String, value: Int)
 
 POST    /users                      controllers.UserController.save(name: String, email: String, externalId: String, avatarUrl: String)
-GET     /users/:id                  controllers.UserController.get(id: String)
+GET     /users/:id                  controllers.UserController.findOne(id: String)
+
+GET     /users/:id/items            controllers.UserController.findAll(id: String)
 
 POST    /users                      controllers.UserController.save(name: String, email: String, externalId: String, avatarUrl: String)
 

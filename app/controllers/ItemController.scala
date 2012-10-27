@@ -43,7 +43,7 @@ object ItemController extends Controller with MongoController with JsonImplicits
       }
   }
 
-  def get(id: String) = Action {
+  def findOne(id: String) = Action {
     Async {
       ItemDao.findById(id).map {
         user => user match {
@@ -54,7 +54,7 @@ object ItemController extends Controller with MongoController with JsonImplicits
     }
   }
 
-  def find(query: String, page: Int, count: Int) = Action {
+  def findAll(query: String, page: Int, count: Int) = Action {
     Async {
       collection.find[JsValue](QueryBuilder().query(
         BSONDocument("name" -> BSONRegex(".*%s.*" format query, "i"))),

@@ -69,13 +69,22 @@ object UserController extends Controller with MongoController with JsonImplicits
     }
   }
 
-  def get(id: String) = Action {
+  def findOne(id: String) = Action {
     Async {
       UserDao.findById(id).map {
         user => user match {
           case Some(json) => Ok(json)
           case None => NotFound
         }
+      }
+    }
+  }
+
+  def findAll(id: String) = Action {
+    Async {
+      ItemDao.findByOwnerId(id).map {
+        items =>
+          Ok(items.foldLeft(JsArray(List()))((obj, item) => obj ++ Json.arr(item)))
       }
     }
   }
