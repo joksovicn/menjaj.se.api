@@ -22,12 +22,17 @@ object ItemDao extends JsonImplicits {
 
   implicit val reader = User.UserBSONReader
 
-  def findById(id: String) = {
+  def findById(id: String) =
     collection.find[JsValue](
       QueryBuilder().query(
         BSONDocument("_id" -> BSONObjectID(id)))
     )(
       DefaultBSONReaderHandler, PrettyJsValueReader, global
     ).headOption
+
+  def updateOwner(id: String, ownerId: String) = {
+    println(id + "---->" + ownerId)
+    collection.update(BSONDocument("_id" -> BSONObjectID(id)),
+      BSONDocument("$set" -> BSONDocument("ownerId" -> BSONString(ownerId))))
   }
 }

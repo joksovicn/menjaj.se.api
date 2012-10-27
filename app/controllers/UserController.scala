@@ -45,7 +45,7 @@ object UserController extends Controller with MongoController with JsonImplicits
                   InternalServerError
                 case true =>
                   Ok.withHeaders(("Location", "/users/%s" format x.id.
-                    map(_.stringify).getOrElse("")), ("User-Token", x.apiToken))
+                    map(_.stringify).getOrElse("")), ("User-Token", modifier.apiToken))
               }
             }
           case Nil =>

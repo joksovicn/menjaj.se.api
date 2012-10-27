@@ -7,13 +7,16 @@ GET     /                           controllers.Application.index
 
 POST    /items                      controllers.ItemController.save(name: String, description: String, status: Int, imageUrl: String)
 GET     /items                      controllers.ItemController.find(query: String ?= "", page: Int ?= 0, count: Int ?= 20)
-
 GET     /items/:id                  controllers.ItemController.get(id: String)
 
 POST    /items/:id/status           controllers.ItemStatusController.save(id: String, value: Int)
 
 POST    /users                      controllers.UserController.save(name: String, email: String, externalId: String, avatarUrl: String)
 GET     /users/:id                  controllers.UserController.get(id: String)
+
+POST    /users                      controllers.UserController.save(name: String, email: String, externalId: String, avatarUrl: String)
+
+POST    /bumps                      controllers.BumpController.save(channelId: String, fromItemId: Option[String], toItemId: Option[String], toUserId: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

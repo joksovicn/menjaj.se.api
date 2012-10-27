@@ -19,13 +19,12 @@ trait Secured {
           Async {
             UserDao.findByToken(token) map {
               userOpt =>
-                println(userOpt)
                 userOpt match {
-                case Some(user) =>
-                  f(user.id.get.stringify)(request)
-                case None =>
-                  Forbidden
-              }
+                  case Some(user) =>
+                    f(user.id.get.stringify)(request)
+                  case None =>
+                    Forbidden
+                }
             }
           })
     }
