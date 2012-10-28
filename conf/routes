@@ -21,4 +21,4 @@ POST    /users                      controllers.UserController.save(name: String
 POST    /bumps                      controllers.BumpController.save(channelId: String, fromItemId: Option[String], toItemId: Option[String], toUserId: String)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /*file                      controllers.Assets.at(path="/public", file)
